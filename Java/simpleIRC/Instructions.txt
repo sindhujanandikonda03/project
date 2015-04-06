@@ -1,0 +1,19 @@
+1. Start server by running ChatServer.java
+2. Start 4 clients by running ChatClient.java
+3. Click "Start service" button on IRC server. By default, it uses 8888 port to listen or you can click "Port Setting" to change that.
+4. Click "User config" button to set up user name and the channel(or room) you want to join. Note that same user names are not allowed in the same room(or channel) --- will be detected in the server
+
+5. Then click "Log In" to connect to the server and check the buddy list in left side of the bottom. (There should have items: all and each user in the same room with you in the list) and there is another list for displaying all available rooms on the right of buddy list.
+
+6. By clicking "Nickname" button, you can change your user name.
+
+7. By using the buddy list("Send to" list), you can choose the user you want to talk with or send your message to all in your room.
+
+8. When you want to talk with a specific user in the room, you may check "private" box and then send the message to that user(select from "Send to" list). Other users cannot see this message, even in the same room with you.
+
+9. Click "Exit" button to quit a room and client will send a message to notify the server. The server will log this user left and send it to all active users. (Note that the server can also send messages to all its clients.)
+
+10. File Transfer: After logging in, select a user you want to send to from "Send to" list (Do not select "all") and then click "File Transfer" button to send file. It will send file "1.txt" in "E:/IRC-master/IRC-master/1.txt" through the socket to the server and then server will forward the data to the target client. (Simply stored in "E:/IRC-master")
+Note that you have to use exactly the same path to make it work or you can modify the path and filename in ClientReceive.java and ServerReceive.java to try to send another file like .zip file.
+
+11. Click "stop service" button in the IRC server, all clients will be notified the server is down right now.
