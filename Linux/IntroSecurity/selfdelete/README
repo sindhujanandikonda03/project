@@ -1,0 +1,11 @@
+Self-Deleting
+
+Chapter in the book
+
+Textbook lab3-4
+
+Description
+
+This program will first check if the filename matches some specific string during execution. If not matching, the program will delete itself without running anymore. Otherwise, the program will continue and check its first argument to see if it matches another string.
+
+Self-Deleting can be done by simply calling unlink() or remove() function.

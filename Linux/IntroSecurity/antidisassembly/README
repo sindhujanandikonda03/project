@@ -1,0 +1,9 @@
+Anti-disassembly Techniques
+------------------------------------------
+Chapter in the book
+
+Textbook Chapter 15 and its labs
+------------------------------------------
+Description
+
+This program has some basic anti-disassembly such as jump instructions with the same target, jump instructions with constant condition when disassembling the code. The functionality is the same with previous program -- take the input string as argument and check it if matching the specific string.

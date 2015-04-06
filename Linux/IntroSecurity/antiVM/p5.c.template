@@ -1,0 +1,159 @@
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include "p5.h"
+
+#define rdtsc(low,high) \
+    asm volatile ("rdtsc" : "=a" (low), "=d" (high))
+
+typedef struct {
+	int lo;
+	int hi;
+} longpair;
+
+typedef union {
+	longpair ll;
+	long long t;	
+} timestamp;
+
+
+//1.read the contents of /proc/scsi/scsi
+int hw_check(){
+  FILE *hw;
+  char label[40];
+  hw = fopen("/proc/scsi/scsi", "r");
+  if(hw == NULL){
+     printf("Fail to open file.\n");
+     exit(-1);
+  }
+  
+  while(!feof(hw)){
+    if(fgets(label, 40, hw)){
+       if(strstr(label, "VBOX")){
+         //printf("hw found.\n");
+         //break;
+         return 1;
+       }
+    }
+  }
+  
+  fclose(hw);
+  return 0;
+}
+
+//2./proc/self/root/sys/class/dmi/id/bios_version = VirtualBox
+int bios_check(){
+  FILE *hd;
+  char label[20];
+  hd = fopen("/proc/self/root/sys/class/dmi/id/bios_version", "r");
+  if(hd == NULL){
+     printf("Fail to open file.\n");
+     exit(-1);
+  }
+  
+  if(fgets(label, 20, hd)!= NULL){
+    if(strstr(label, "VirtualBox"))
+	//printf("bios found.\n");
+        return 1;
+    else
+        return 0;
+  }
+ 
+  fclose(hd);
+}
+//3.check the process VBoxService
+int process_check(){
+  DIR* dir;
+  char buf[100];
+  struct dirent* direntry;
+  char *endptr;
+  dir = opendir("/proc");
+  if(dir == NULL){
+    perror("Fail to open /proc!");
+    exit(-1);
+  }
+  
+  while((direntry = readdir(dir)) != NULL){
+  // Traverse through each entry in directory /proc
+    long pid = strtol(direntry->d_name, &endptr, 10);
+    if(*endptr != '\0') continue;
+
+    snprintf(buf, sizeof(buf), "/proc/%ld/cmdline", pid);
+    FILE* fd = fopen(buf, "r");
+    if(fd != NULL){
+      if(fgets(buf, sizeof(buf), fd) != NULL){
+         if(strstr(buf, "VBoxService"))
+	   //printf("process found.\n");
+           return 1; 
+      }
+      
+    }    
+  }
+  return 0;
+}
+//4./sys/block/sda/device/model = VBOX HARDDISK
+int hd_check(){
+  FILE *hd;
+  char label[20];
+  hd = fopen("/sys/block/sda/device/model", "r");
+  if(hd == NULL){
+     printf("Fail to open file.\n");
+     exit(-1);
+  }
+  
+  if(fgets(label, 20, hd)!= NULL){
+    if(strstr(label, "VBOX"))
+	//printf("hd found.\n");
+        return 1;
+  }
+ 
+  fclose(hd);
+  return 0;
+}
+
+/* Timing Check: Measure the running time of two operations and tell the difference between real machine and virtualbox */
+int time_check(){
+  timestamp a,b,c, a1, b1, c1;
+  rdtsc(a.ll.lo,a.ll.hi);
+  asm("nop");
+  rdtsc(b.ll.lo,b.ll.hi);
+  c.t = b.t-a.t;
+  
+  rdtsc(a1.ll.lo,a1.ll.hi);
+  asm("cpuid");
+  rdtsc(b1.ll.lo,b1.ll.hi);
+  c1.t = b1.t-a1.t;
+  if(c1.t - c.t > 0xa00) {
+    //printf("VM\n");
+     return 1;
+  }
+  else return 0;
+}
+int main(int argc, char* argv[])
+{
+  char final[20]="";
+  NOP_PAD1
+  if(argc < 2) {
+     printf("Usage: ./p4 <STRING>\n");
+     exit(0);  
+  }
+  
+  if(hw_check() == 1)     exit(1);
+  if(bios_check() == 1)   exit(1);
+  NOP_PAD2
+  if(process_check() == 1) exit(1);
+  if(hd_check() ==1)    exit(1);
+  NOP_PAD3
+  if(time_check() == 1) exit(1);
+
+  strncpy(final, STR1, 7);
+  if(strncmp(argv[1], final, strlen(final))){
+    printf("Please try again.\n");
+  }
+  else{
+    printf("Good Job!!.\n");
+  }
+  
+}

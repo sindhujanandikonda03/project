@@ -1,0 +1,26 @@
+Anti-Debugging Techniques
+------------------------------------------
+Chapter in the book
+
+Textbook Chapter 16 and its labs
+------------------------------------------
+Description
+
+This program implements some basic anti-debugging techniques as follows:
+1. file descriptor check (fd_check())
+   In normal cases, the new process should have only FDs 0 (stdin), 1 (stdout) and 2(stderr), but GDB will open up some more FDs and never closes them. Thus, this function simply open a file and check the number of file descriptors.
+
+2. Ptrace check (check())
+   Simply use ptrace to attach the process itself to check if GDB exists
+
+3. cmdline check (cmdline_check())
+   Simply searching the file /proc/PID/cmdline to see if there is a string "gdb". PID is the parent id of current process (getppid())
+
+4. status_check (status_check())
+   Similar to the last technique but search the file /proc/PID/status this time and try to find out the string "gdb"
+
+5. SIGTRAP trick 
+   Simply initiate debug flag to 1 and raise SIGTRAP under GDB. Since GDB will handle SIGTRAP, it will not reach the handler that resets the debug flag.
+
+6. INT Scan
+   Simply check the byte 0xCC in memory for breakpoints to main function. By using gdb, I found out the breakpoint in gdb will be stored in <main+3> or <main+4>, so I just did a simple scan for 0xCC byte, which will check the first 10 bytes from the start of main function. 

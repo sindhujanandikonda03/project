@@ -1,0 +1,50 @@
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "p3.h"
+
+#define JUMP_MID asm volatile ( \
+	"jmp label+1	        \n"	    \
+	"label: .byte 0xe9	\n" 	    \
+	"mov %eax, %eax		\n")
+
+#define UNCONDITION_JUMP asm volatile ( \
+	"  pushl %eax	   \n"		\
+	"  cmpl %eax, %eax \n"		\
+	"  jz 0f	   \n"		\
+	"  .byte 0x0F	   \n"		\
+	"0:		   \n"		\
+	"  popl %eax	   \n")
+
+#define ANTI_DISASM asm volatile ( \
+	"push %eax	\n"	   \
+	"xor %eax, %eax \n"	   \
+	".byte 0x74	\n"	   \
+	".byte 0x01	\n"	   \
+	".byte 0x0f	\n"	   \
+	"pop %eax	\n")
+
+int main(int argc, char* argv[])
+{
+  NOP_PAD1
+  UNCONDITION_JUMP;
+  char final[20]="";
+  
+  if(argc < 2) {
+     printf("Usage: ./p3 <STRING>\n");
+     exit(0);  
+  }
+  NOP_PAD2
+  JUMP_MID; 
+  strncpy(final, STR1, 7);
+  //printf("%s\n", final);
+  ANTI_DISASM;
+  NOP_PAD3
+  if(strncmp(argv[1], final, strlen(final))){
+    printf("Please try again.\n");
+  }
+  else{
+    printf("Good Job!!.\n");
+  }
+}

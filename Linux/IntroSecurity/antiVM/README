@@ -1,0 +1,18 @@
+Anti-VM Techniques
+------------------------------------------
+Chapter in the book
+
+Textbook Chapter 17 and its labs
+------------------------------------------
+Description
+
+This program implements some basic anti-VM techniques for virtualbox as follows:
+1. Find out the sensitive string from process, hardware, bios information
+   a. Check if string "VBOX" exists in /proc/scsi/scsi
+   b. Check if string "VirtualBox" exists in /proc/self/root/sys/class/dmi/id/bios_version
+   c. Check if the process "VBoxService" exists. Simply traverse the directory /proc and check each /proc/PID/cmdline for the string
+   d. Check harddisk info -- if the string "VBOX" exists in /sys/block/sda/device/model
+
+2. Timing Check
+   This method will measure the running time of two instructions "nop" and "cpuid". In virtualized environment, cpuid normally has to trap to the hypervisor, which may take much more time than real machine. More details can be found in the paper " Virtualization Detection: New Strategies and Their Effectiveness"
+http://www.cs.berkeley.edu/~cthompson/papers/virt-detect.pdf

@@ -1,0 +1,9 @@
+Base64 Encoding and Decoding
+
+Chapter in the book
+
+Textbook Chapter13 Page 277-280 and chapter13 labs
+
+Description
+
+This program takes one argument(base64 encoding string) as input string, and then will decode the input string and compare it with a specific string. If matching, then print "Good Job". Otherwise, print "Try again"
