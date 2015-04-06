@@ -1,5 +1,5 @@
 import socket
-#Done.
+
 
 TCP_IP = '192.168.14.30'
 TCP_PORT = 2005
